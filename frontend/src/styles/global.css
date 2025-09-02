@@ -1,6 +1,6 @@
 .show{
     width: 250px;
-        display:flex;
+    display:flex;
     flex-direction: column; 
 }
 
