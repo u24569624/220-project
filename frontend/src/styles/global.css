@@ -1,0 +1,16 @@
+.show{
+    width: 250px;
+    display:block;
+}
+
+.close{
+    width:0px;
+    display: none;
+}
+
+.icon{
+    width:35px;
+    height:5px;
+    background-color: black;
+    margin: 6px 0px;
+}
