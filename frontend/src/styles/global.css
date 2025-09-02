@@ -1,6 +1,7 @@
 .show{
     width: 250px;
-    display:block;
+        display:flex;
+    flex-direction: column; 
 }
 
 .close{
@@ -13,4 +14,17 @@
     height:5px;
     background-color: black;
     margin: 6px 0px;
+}
+
+#main{
+    display:flex;
+    flex-direction: column;
+}
+
+nav{
+    background-color: rgb(155, 155, 155);
+}
+
+body{
+    margin: 0%;
 }

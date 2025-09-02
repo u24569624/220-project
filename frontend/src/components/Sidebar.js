@@ -6,7 +6,6 @@ import '../styles/global.css';
 const Sidebar = () => {
     const [isOpen, setIsOpen] = React.useState(false);
 
-
     return (
         <div id="main">
             <div id="open" onClick={() => setIsOpen(true)}>
