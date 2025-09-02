@@ -2,7 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development', // Explicitly set mode
   entry: './frontend/src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -13,9 +12,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-        },
+        use: ['babel-loader'],
       },
       {
         test: /\.css$/,
@@ -32,7 +29,8 @@ module.exports = {
     }),
   ],
   devServer: {
+    static: path.join(__dirname, 'dist'),
+    compress: true,
     port: 3000,
-    historyApiFallback: true,
   },
 };
