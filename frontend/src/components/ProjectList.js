@@ -1,3 +1,4 @@
+// ProjectList.js
 import React, { useState, useEffect } from 'react';
 import ProjectPreview from './ProjectPreview';
 
@@ -7,6 +8,11 @@ const ProjectList = ({ userId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+      setError('Invalid user ID');
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     fetch(`/api/users/${userId}/projects`)
       .then(res => {

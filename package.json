@@ -4,9 +4,9 @@
   "description": "",
   "main": "frontend/src/index.js",
   "scripts": {
-  "start": "webpack serve --mode development --open",
-  "build": "webpack --config webpack.config.js",
-  "dev": "node server.js"
+    "start": "webpack serve --mode development --open",
+    "build": "webpack --config webpack.config.js",
+    "dev": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/u24569624/220-project#readme",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "mongodb": "4.0",
     "multer": "^2.0.2",

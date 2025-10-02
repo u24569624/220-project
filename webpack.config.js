@@ -30,18 +30,20 @@ module.exports = {
       template: './frontend/public/index.html',
     }),
   ],
-  devServer: {
-    static: path.join(__dirname, 'frontend/public'),
-    compress: true,
-    port: 3000,
-    proxy: [
-      {
-        context: ['/api'],
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-        pathRewrite: { '^/api': '' },
-      },
-    ],
-    historyApiFallback: true, // Ensures all routes fall back to index.html
+devServer: {
+  static: {
+    directory: path.join(__dirname, 'frontend/public'),
   },
+  compress: true,
+  port: 3000,
+  open: true,
+  proxy: [
+    {
+      context: '/api',
+      target: 'http://localhost:5000',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+  ],
+}
 };

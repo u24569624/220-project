@@ -1,170 +1,271 @@
-// server.js
 const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
-const dbFunctions = require('./db'); // Your existing db functions
+const app = express();
+const port = 5000;
 require("dotenv").config();
 
-const app = express();
 app.use(express.json());
 
-// MongoDB Configuration
-const uri = process.env.MONGO_URI; // Update if using a different host/port or authentication
-const dbName = 'version-control-db'; // Match the database name used in seed.js
+// MongoDB Connection
+const uri = process.env.MONGO_URI; // Replace with your URI
+const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 let db;
 
 async function connectToDB() {
-  if (!db) {
-    const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-    try {
+  try {
+    if (!db) {
       await client.connect();
-      console.log('Connected to MongoDB at', uri);
-      db = client.db(dbName);
-    } catch (error) {
-      console.error('Failed to connect to MongoDB:', error.message);
-      process.exit(1); // Exit on connection failure
+      db = client.db('version-control-db');
+      console.log('Connected to MongoDB');
     }
+    return db;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
   }
-  return db;
 }
 
-// API Endpoints
-
-// Get user by ID
-app.get('/api/users/:userId', async (req, res) => {
+// Authentication Routes (Adjusted for proxy rewrite)
+app.post('/auth/signin', async (req, res) => {
   try {
+    const { username, password } = req.body;
     const db = await connectToDB();
-    const user = await db.collection('users').findOne({ _id: new ObjectId(req.params.userId) });
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json(user);
+    const user = await db.collection('users').findOne({ username, password }); // Use hashing in production
+    if (user) {
+      res.json({ success: true, user: { id: user._id.toString(), username: user.username } });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Signin error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get projects for a user
-app.get('/api/users/:userId/projects', async (req, res) => {
+app.post('/auth/signup', async (req, res) => {
   try {
+    const { email, password, name } = req.body;
     const db = await connectToDB();
-    const projects = await db.collection('projects').find({ ownerId: req.params.userId }).toArray();
-    res.json(projects);
+    const existingUser = await db.collection('users').findOne({ email });
+    if (existingUser) {
+      res.status(400).json({ success: false, message: 'Email already registered' });
+    } else {
+      const result = await db.collection('users').insertOne({ email, password, name, friends: [], workConnections: '', createdAt: new Date() });
+      res.json({ success: true, user: { id: result.insertedId.toString(), username: name } });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Signup error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get local activities for a user
-app.get('/api/activity/local/:userId', async (req, res) => {
+// User Routes
+app.get('/users/:id', async (req, res) => {
   try {
+    const userId = req.params.id;
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: 'Invalid user ID' });
+    }
     const db = await connectToDB();
-    const activities = await db.collection('activities').find({ userId: req.params.userId }).toArray();
-    res.json(activities);
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+    if (user) {
+      res.json({ ...user, _id: user._id.toString() });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error fetching user:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get project details by ID
-app.get('/api/projects/:projectId', async (req, res) => {
+app.get('/users/:id/projects', async (req, res) => {
   try {
+    const userId = req.params.id;
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: 'Invalid user ID' });
+    }
     const db = await connectToDB();
-    const project = await db.collection('projects').findOne({ _id: new ObjectId(req.params.projectId) });
-    if (!project) return res.status(404).json({ error: 'Project not found' });
-    res.json(project);
+    const projects = await db.collection('projects').find({ ownerId: new ObjectId(userId) }).toArray();
+    res.json(projects.map(p => ({ ...p, _id: p._id.toString() })));
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error fetching projects:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Get files for a project
-app.get('/api/projects/:projectId/files', async (req, res) => {
+app.put('/users/:id', async (req, res) => {
   try {
     const db = await connectToDB();
-    const files = await db.collection('files').find({ projectId: req.params.projectId }).toArray();
-    res.json(files);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get issues for a project
-app.get('/api/projects/:projectId/issues', async (req, res) => {
-  try {
-    const db = await connectToDB();
-    const issues = await db.collection('issues').find({ projectId: req.params.projectId }).toArray();
-    res.json(issues);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get messages for a project
-app.get('/api/projects/:projectId/messages', async (req, res) => {
-  try {
-    const db = await connectToDB();
-    const messages = await db.collection('messages').find({ projectId: req.params.projectId }).toArray();
-    res.json(messages);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get pull requests for a project
-app.get('/api/projects/:projectId/pulls', async (req, res) => {
-  try {
-    const db = await connectToDB();
-    const pulls = await db.collection('pullRequests').find({ projectId: req.params.projectId }).toArray();
-    res.json(pulls);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Get versions for a project
-app.get('/api/projects/:projectId/versions', async (req, res) => {
-  try {
-    const db = await connectToDB();
-    const versions = await db.collection('versions').find({ projectId: req.params.projectId }).toArray();
-    res.json(versions);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Check out a file (example POST endpoint)
-app.post('/api/projects/:projectId/files/:fileName', async (req, res) => {
-  try {
-    const db = await connectToDB();
-    const { userId } = req.body; // Assume userId is sent in the request body
-    if (!userId) return res.status(400).json({ error: 'User ID is required' });
-    await db.collection('files').updateOne(
-      { projectId: req.params.projectId, name: req.params.fileName },
-      { $set: { checkedOutBy: userId } }
+    const { name, contact, workConnections } = req.body;
+    const result = await db.collection('users').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: { name, contact, workConnections } }
     );
-    res.json({ message: `Checked out ${req.params.fileName}` });
+    if (result.matchedCount > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-// Send friend request (example POST endpoint)
-app.post('/api/users/:targetId/friends', async (req, res) => {
+app.post('/users/:id/friends', async (req, res) => {
   try {
     const db = await connectToDB();
-    const { userId } = req.body; // Assume userId is sent in the request body
-    if (!userId) return res.status(400).json({ error: 'User ID is required' });
-    await db.collection('users').updateOne(
-      { _id: new ObjectId(req.params.targetId) },
-      { $push: { friends: userId } }
+    const { friendId } = req.body;
+    const result = await db.collection('users').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $addToSet: { friends: new ObjectId(friendId) } }
     );
-    res.json({ message: 'Friend request sent' });
+    if (result.matchedCount > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'User not found' });
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
-const PORT = 5000;
-app.listen(PORT, async () => {
-  await connectToDB(); // Ensure DB connection on startup
-  console.log(`Server running on port ${PORT}`);
+// Project Routes
+app.post('/projects', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { name, description, ownerId } = req.body;
+    const result = await db.collection('projects').insertOne({ name, description, ownerId: new ObjectId(ownerId), members: [new ObjectId(ownerId)], checkins: [] });
+    res.json({ success: true, id: result.insertedId.toString() });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.get('/projects/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const project = await db.collection('projects').findOne({ _id: new ObjectId(req.params.id) });
+    if (project) {
+      res.json({ ...project, _id: project._id.toString() });
+    } else {
+      res.status(404).json({ success: false, message: 'Project not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.put('/projects/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { name, description } = req.body;
+    const result = await db.collection('projects').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $set: { name, description } }
+    );
+    if (result.matchedCount > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'Project not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.post('/projects/:id/members', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { userId } = req.body;
+    const result = await db.collection('projects').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $addToSet: { members: new ObjectId(userId) } }
+    );
+    if (result.matchedCount > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'Project not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Check-in Routes
+app.post('/projects/:id/checkins', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { userId, type, message } = req.body;
+    const checkInData = { projectId: new ObjectId(req.params.id), userId: new ObjectId(userId), type, message, date: new Date() };
+    const result = await db.collection('checkins').insertOne(checkInData);
+    await db.collection('projects').updateOne(
+      { _id: new ObjectId(req.params.id) },
+      { $push: { checkins: result.insertedId } }
+    );
+    res.json({ success: true, id: result.insertedId.toString() });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.get('/projects/:id/checkins', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const checkins = await db.collection('checkins').find({ projectId: new ObjectId(req.params.id) }).toArray();
+    res.json(checkins.map(c => ({ ...c, _id: c._id.toString() })));
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Version History (Stubbed)
+app.get('/projects/:id/versions', async (req, res) => {
+  try {
+    res.json(['v1.0 - 2025-09-03', 'v0.9 - 2025-09-02']);
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// In server.js, before app.listen
+app.get('/activity/local/:userId', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const userId = req.params.userId;
+    console.log(`Fetching activities for userId: ${userId}`); // Debug log
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: 'Invalid user ID' });
+    }
+    const activities = await db.collection('activities').find({ userId: userId }).toArray(); // Try string match first
+    if (!activities.length) {
+      console.log(`No activities found for userId: ${userId}`);
+      return res.json([]); // Return empty array with 200
+    }
+    res.json(activities.map(a => ({ ...a, _id: a._id.toString() })));
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+app.listen(port, async () => {
+  try {
+    await connectToDB();
+    console.log(`Server running on port ${port}`);
+  } catch (error) {
+    console.error('Failed to start server:', error);
+  }
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  await client.close();
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  await client.close();
+  process.exit(0);
 });

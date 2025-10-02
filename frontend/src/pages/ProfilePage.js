@@ -1,28 +1,30 @@
+// ProfilePage.js
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
 import ProjectList from '../components/ProjectList';
 import ActivityFeed from '../components/ActivityFeed';
 import Friends from '../components/Friends';
+import FriendRequest from '../components/FriendRequest';
 
 const ProfilePage = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { userId: paramUserId } = useParams();
+  const storedUserId = localStorage.getItem('userId');
+  const userId = paramUserId || storedUserId;
+  console.log('ProfilePage userId:', userId); // Debug
   const [user, setUser] = useState(null);
   const [activities, setActivities] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Validate ID (basic check for MongoDB ObjectId length and format)
-    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
-    if (!isValidObjectId) {
-      setError('Invalid user ID');
+    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+      setError('Invalid or missing user ID');
       return;
     }
 
-    fetch(`/api/users/${id}`)
+    fetch(`/api/users/${userId}`)
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
@@ -32,26 +34,25 @@ const ProfilePage = () => {
         console.error('Error fetching user:', error);
         setError('Failed to load user data');
       });
-  }, [id]);
+  }, [userId]);
 
   useEffect(() => {
-    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
-    if (!isValidObjectId) {
-      setError('Invalid user ID');
+    if (!userId || !/^[0-9a-fA-F]{24}$/.test(userId)) {
+      setError('Invalid or missing user ID');
       return;
     }
 
-    fetch(`/api/activity/local/${id}`)
+    fetch(`/api/activity/local/${userId}`)
       .then(res => {
         if (!res.ok) throw new Error('Network response was not ok');
         return res.json();
       })
       .then(setActivities)
       .catch(error => console.error('Error fetching activities:', error));
-  }, [id]);
+  }, [userId]);
 
   const handleEdit = (updates) => {
-    fetch(`/api/users/${id}`, {
+    fetch(`/api/users/${userId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
@@ -71,10 +72,11 @@ const ProfilePage = () => {
     <div className="profile-page">
       <Header />
       <main>
-        <Profile {...user} />
+        <Profile id={userId} {...user} /> {/* Use id prop as expected */}
         <EditProfile {...user} onSave={handleEdit} />
         <Friends friendIds={user.friends || []} />
-        <ProjectList projectIds={user.projects || []} />
+        <FriendRequest targetId={userId} />
+        <ProjectList userId={userId} projectIds={user.projects || []} /> {/* Consistent prop name */}
         <ActivityFeed activities={activities} />
       </main>
     </div>
