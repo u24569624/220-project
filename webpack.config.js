@@ -1,3 +1,4 @@
+// webpack.config.js
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -6,7 +7,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
   module: {
     rules: [
@@ -17,7 +18,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
     ],
   },
@@ -33,5 +34,14 @@ module.exports = {
     static: path.join(__dirname, 'frontend/public'),
     compress: true,
     port: 3000,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        pathRewrite: { '^/api': '' },
+      },
+    ],
+    historyApiFallback: true, // Ensures all routes fall back to index.html
   },
 };

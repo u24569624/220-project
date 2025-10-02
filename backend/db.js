@@ -1,7 +1,8 @@
 // db.js
 const { MongoClient, ObjectId } = require('mongodb');
+require("dotenv").config();
 
-const uri = 'mongodb+srv://test-user:test-password@cluster0.0jkb15d.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'; 
+const uri = process.env.MONGO_URI; 
 const dbName = 'version-control-db'; 
 
 let db;

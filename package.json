@@ -4,9 +4,9 @@
   "description": "",
   "main": "frontend/src/index.js",
   "scripts": {
-    "start": "webpack serve --mode development --open",
-    "build": "webpack --mode production",
-    "server": "node backend/server.js"
+  "start": "webpack serve --mode development --open",
+  "build": "webpack --config webpack.config.js",
+  "dev": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/u24569624/220-project#readme",
   "dependencies": {
-    "express": "^4.19.2",
+    "express": "^4.21.2",
+    "mongodb": "4.0",
+    "multer": "^2.0.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2"
@@ -29,10 +31,15 @@
     "@babel/core": "^7.28.3",
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
+    "@tailwindcss/postcss": "^4.1.14",
+    "autoprefixer": "^10.4.21",
     "babel-loader": "^10.0.0",
     "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.4",
+    "postcss": "^8.5.6",
+    "postcss-loader": "^8.2.0",
     "style-loader": "^4.0.0",
+    "tailwindcss": "^4.1.14",
     "webpack": "^5.101.3",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"

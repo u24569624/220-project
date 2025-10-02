@@ -1,52 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
-import Sidebar from '../components/sidebar';
 import Profile from '../components/Profile';
 import EditProfile from '../components/EditProfile';
-import Friends from '../components/Friends';
-import FriendRequest from '../components/FriendRequest';
 import ProjectList from '../components/ProjectList';
-import ActivityFeed from '../components/ActivityFeed.js';
+import ActivityFeed from '../components/ActivityFeed';
+import Friends from '../components/Friends';
 
 const ProfilePage = () => {
-  // Dummy data for profile (replace with API call in future)
-  const user = {
-    id: 'user123',
-    name: 'Jane Doe',
-    birthday: '1995-05-15',
-    contact: 'jane.doe@example.com',
-    workConnections: 'Tech Corp',
-    friends: ['friend456', 'friend789'],
-    projects: ['proj101', 'proj202'],
-    activity: [
-      { type: 'check-in', project: 'proj101', date: '2025-09-02' },
-      { type: 'check-out', project: 'proj202', date: '2025-09-01' },
-    ],
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [activities, setActivities] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Validate ID (basic check for MongoDB ObjectId length and format)
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+    if (!isValidObjectId) {
+      setError('Invalid user ID');
+      return;
+    }
+
+    fetch(`/api/users/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(setUser)
+      .catch(error => {
+        console.error('Error fetching user:', error);
+        setError('Failed to load user data');
+      });
+  }, [id]);
+
+  useEffect(() => {
+    const isValidObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+    if (!isValidObjectId) {
+      setError('Invalid user ID');
+      return;
+    }
+
+    fetch(`/api/activity/local/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then(setActivities)
+      .catch(error => console.error('Error fetching activities:', error));
+  }, [id]);
+
+  const handleEdit = (updates) => {
+    fetch(`/api/users/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to update user');
+        return res.json();
+      })
+      .then(setUser)
+      .catch(error => console.error('Error updating user:', error));
   };
+
+  if (error) return <div>{error}</div>;
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div className="profile-page">
       <Header />
-      <div className="main-content">
-        <main>
-          <Profile
-            name={user.name}
-            birthday={user.birthday}
-            contact={user.contact}
-            workConnections={user.workConnections}
-          />
-          <EditProfile
-            name={user.name}
-            contact={user.contact}
-            workConnections={user.workConnections}
-            onSave={() => alert('Profile updated! (Dummy response)')}
-          />
-          <Friends friendIds={user.friends} />
-          <FriendRequest targetId={user.id} />
-          <ProjectList projectIds={user.projects} />
-          <ActivityFeed activities={user.activity} />
-        </main>
-      </div>
+      <main>
+        <Profile {...user} />
+        <EditProfile {...user} onSave={handleEdit} />
+        <Friends friendIds={user.friends || []} />
+        <ProjectList projectIds={user.projects || []} />
+        <ActivityFeed activities={activities} />
+      </main>
     </div>
   );
 };

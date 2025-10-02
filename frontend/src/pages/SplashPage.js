@@ -1,20 +1,22 @@
 import React from 'react';
-import Header from '../components/Header.js';
 import LoginForm from '../components/LoginForm.js';
 import SignUpForm from '../components/SignUpForm.js';
 import {Link} from 'react-router-dom';
-import '../styles/global.css';
 
 const SplashPage = () => {
     return(
-        <div>
-            <nav>
-                <img src="/assets/images/Logo.png" alt="Logo" ></img>
-                <h1>Name</h1>
-                {/*Temp links while endpoints are stubbed*/}
-                <Link to="/home">Home</Link>
-                <Link to="/project/456">Project</Link>
+        <div className="min-h-screen bg-gray-100">
+            <nav className="bg-white p-4 flex items-center shadow">
+                <img src="/assets/images/Logo.png" alt="Logo" className="h-10" />
+                <h1 className="ml-4 text-xl font-bold text-blue-600">Name</h1>
+                <div className="ml-auto space-x-4">
+                <Link to="/home" className="text-blue-500 hover:underline">Home</Link>
+                <Link to="/project/456" className="text-blue-500 hover:underline">Project</Link>
+                </div>
             </nav>
+            <div className="container mx-auto p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+            </div>
 
             <LoginForm />
             <SignUpForm />

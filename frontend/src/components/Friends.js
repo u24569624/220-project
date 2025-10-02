@@ -1,25 +1,15 @@
+// frontend/src/components/Friends.js
 import React from 'react';
-import ProfilePreview from './ProfilePreview';
 
-const Friends = ({ friendIds }) => {
-  // Dummy friend data based on IDs
-  const dummyFriends = friendIds.map((id) => ({
-    id,
-    name: `Friend ${id}`,
-  }));
-
-  return (
-    <section className="friends">
-      <h2>Friends</h2>
-      <ul>
-        {dummyFriends.map((friend) => (
-          <li key={friend.id}>
-            <ProfilePreview name={friend.name} />
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-};
+const Friends = ({ friendIds }) => (
+  <div className="bg-white p-4 rounded shadow">
+    <h2>Friends</h2>
+    {friendIds && Array.isArray(friendIds) ? (
+      friendIds.map(id => <div key={id} className="p-2 border-b">{id}</div>)
+    ) : (
+      <p>No friends available</p>
+    )}
+  </div>
+);
 
 export default Friends;

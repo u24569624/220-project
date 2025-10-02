@@ -1,34 +1,33 @@
-import React from 'react';
-import {useState} from 'react';
-import '../styles/global.css';
+// CreateProject.js (new file)
+import React, { useState } from 'react';
 
-const CreateProject = () =>{
-    const [isOpen, setIsOpen] = React.useState(false);
+const CreateProject = ({ onCreate }) => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
 
-    return(
-        <div id="Create">
-            <button onClick={() => setIsOpen(true)}><span className="material-symbols-outlined">add</span></button>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onCreate({ name, description });
+    setName(''); setDescription('');
+  };
 
-              <div className={`${isOpen ? 'show' : 'close'}`} >
-                <h2>Add New Repository</h2>
-                  <h3>Repository Name</h3>
-                  <input
-                    id="repo-name"
-                    placeholder="Project Name"
-                    required
-                  />
-                  <h3>Description</h3>
-                  <input
-                    id="repo-description"
-                    placeholder="A brief description of your project"
-                    required
-                  />
-                <button type="submit" onClick={() => setIsOpen(false)}>
-                  Add Repository
-                </button>
-              </div>
-        </div>
-    );
-} 
+  return (
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-4">
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Project Name"
+        className="border p-2 w-full mb-2"
+      />
+      <input
+        value={description}
+        onChange={e => setDescription(e.target.value)}
+        placeholder="Description"
+        className="border p-2 w-full mb-2"
+      />
+      <button type="submit" className="bg-green-500 text-white p-2 w-full">Create</button>
+    </form>
+  );
+};
 
 export default CreateProject;
