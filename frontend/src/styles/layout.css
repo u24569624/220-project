@@ -1,0 +1,51 @@
+/* Layout components */
+.home-page,
+.profile-page,
+.project-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header should be full width */
+.project-page > .header {
+  width: 100%;
+}
+
+.project-page main {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.project-page aside {
+  padding: 1rem;
+}
+
+/* Fix for ProjectPage specific layout */
+.project-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.project-page-container > header {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.project-page-container > .project-content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}

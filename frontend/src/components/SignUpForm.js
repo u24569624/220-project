@@ -43,44 +43,41 @@ const SignUpForm = () => {
   return (
     <div className="SignUp">
       <button onClick={() => setIsOpen(true)} className="bg-green-500 text-white p-2">Sign Up</button>
-      <div className={`${isOpen ? 'block' : 'hidden'} bg-white p-4 rounded shadow`}>
-        <h1 className="text-xl font-semibold">Sign Up</h1>
+      <div className={`${isOpen ? 'block' : 'hidden'}`}>
+        <h1>Sign Up</h1>
         <p>Please fill in this form to create an account.</p>
-        <form onSubmit={handleSubmit} className="space-y-2">
+        <form onSubmit={handleSubmit}>
           <label><b>Email</b></label>
           <input
             type="email"
             placeholder="Enter Email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="border p-2 w-full"
           />
-          {errors.email && <p className="text-red-500">{errors.email}</p>}
+          {errors.email && <p>{errors.email}</p>}
           <label><b>Password</b></label>
           <input
             type="password"
             placeholder="Enter Password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="border p-2 w-full"
           />
-          {errors.password && <p className="text-red-500">{errors.password}</p>}
+          {errors.password && <p>{errors.password}</p>}
           <label><b>Repeat Password</b></label>
           <input
             type="password"
             placeholder="Repeat Password"
             value={repeatPassword}
             onChange={e => setRepeatPassword(e.target.value)}
-            className="border p-2 w-full"
           />
-          {errors.repeatPassword && <p className="text-red-500">{errors.repeatPassword}</p>}
+          {errors.repeatPassword && <p>{errors.repeatPassword}</p>}
           <label>
             <input type="checkbox" name="remember" /> Remember me
           </label>
           <button type="submit">Sign Up</button>
         </form>
-        <div className="mt-2">
-          <button type="button" className="cancelbtn bg-gray-300 p-2" onClick={() => setIsOpen(false)}>Cancel</button>
+        <div>
+          <button type="button" onClick={() => setIsOpen(false)}>Cancel</button>
         </div>
       </div>
     </div>

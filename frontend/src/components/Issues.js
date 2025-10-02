@@ -6,14 +6,28 @@ const Issues = ({ projectId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!projectId) {
+      setLoading(false);
+      return;
+    }
+
+    console.log('Issues - Fetching for project:', projectId);
+    
     setLoading(true);
-    fetch(`/api/projects/${projectId}/issues`)
+    // REMOVE /api from the URL
+    fetch(`/projects/${projectId}/issues`)
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch issues');
+        if (!res.ok) throw new Error(`Failed to fetch issues: ${res.status}`);
         return res.json();
       })
-      .then(data => setIssues(data))
-      .catch(err => setError(err.message))
+      .then(data => {
+        console.log('Issues data received:', data);
+        setIssues(data);
+      })
+      .catch(err => {
+        console.error('Error fetching issues:', err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [projectId]);
 
@@ -23,11 +37,15 @@ const Issues = ({ projectId }) => {
   return (
     <section className="issues">
       <h2>Issues</h2>
-      <ul>
-        {issues.map((issue, index) => (
-          <li key={index}>{issue}</li>
-        ))}
-      </ul>
+      {issues.length === 0 ? (
+        <p>No issues found for this project.</p>
+      ) : (
+        <ul>
+          {issues.map((issue, index) => (
+            <li key={index}>{issue.title || issue}</li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 };

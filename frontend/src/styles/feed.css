@@ -1,0 +1,78 @@
+/* Feed and activity components */
+.feed-controls {
+  margin-bottom: 1.5rem;
+}
+
+.feed-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.feed-tabs button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  color: var(--text-light);
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.feed-tabs button.active {
+  color: var(--secondary-color);
+  border-bottom-color: var(--secondary-color);
+}
+
+.feed-tabs button:hover:not(.active) {
+  color: var(--secondary-color);
+}
+
+.feed-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.feed-item:hover {
+  background-color: var(--background-color);
+}
+
+.feed-item:last-child {
+  border-bottom: none;
+}
+
+.feed-item strong {
+  color: var(--primary-color);
+}
+
+.feed-item small {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+.feed-item hr {
+  margin: 1rem 0;
+  border: none;
+  border-top: 1px solid var(--border-color);
+}
+
+.activity-feed ul {
+  list-style: none;
+}
+
+.activity-feed li {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.activity-feed li:hover {
+  background-color: var(--background-color);
+  padding-left: 1.5rem;
+}
+
+.activity-feed li:last-child {
+  border-bottom: none;
+}

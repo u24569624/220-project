@@ -1,0 +1,93 @@
+/* Sidebar styles */
+#sidebar-container {
+  position: relative;
+}
+
+#sidebar-open {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+#sidebar-open .icon {
+  width: 20px;
+  height: 3px;
+  background-color: var(--white);
+  border-radius: 2px;
+}
+
+#sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100vh;
+  background-color: var(--white);
+  box-shadow: var(--shadow-hover);
+  transition: var(--transition);
+  z-index: 1000;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+}
+
+#sidebar-menu.show {
+  left: 0;
+}
+
+#sidebar-menu.close {
+  left: -300px;
+}
+
+.closebtn {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--text-light);
+  transition: var(--transition);
+}
+
+.closebtn:hover {
+  color: var(--accent-color);
+}
+
+#sidebar-menu a {
+  display: block;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0;
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  border-left: 3px solid transparent;
+}
+
+#sidebar-menu a:hover {
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+  border-left-color: var(--secondary-color);
+}
+
+.projects-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.projects-section h3 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.project-link {
+  font-size: 0.9rem;
+  padding-left: 1.5rem !important;
+  color: var(--text-light) !important;
+}
+
+.project-link:hover {
+  color: var(--secondary-color) !important;
+}

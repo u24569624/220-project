@@ -51,6 +51,8 @@ const ProfilePage = () => {
       .catch(error => console.error('Error fetching activities:', error));
   }, [userId]);
 
+  
+
   const handleEdit = (updates) => {
     fetch(`/api/users/${userId}`, {
       method: 'PUT',

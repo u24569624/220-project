@@ -9,26 +9,42 @@ const Sidebar = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId'); // Assume userId is stored after login
-    if (userId) {
-      fetch(`/api/users/${userId}/projects`)
-        .then(res => {
-          if (!res.ok) throw new Error('Failed to fetch projects');
-          return res.json();
-        })
-        .then(data => {
-          setProjects(data);
+    const fetchProjects = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        
+        if (!userId) {
+          setError('No user logged in');
           setLoading(false);
-        })
-        .catch(err => {
-          console.error('Error fetching projects:', err);
-          setError('Failed to load projects');
+          return;
+        }
+
+        // Validate userId format (MongoDB ObjectId)
+        if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+          setError('Invalid user ID format');
           setLoading(false);
-        });
-    } else {
-      setError('No user logged in');
-      setLoading(false);
-    }
+          return;
+        }
+
+        const response = await fetch(`/api/users/${userId}/projects`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch projects: ${response.status}`);
+        }
+        
+        const projectsData = await response.json();
+        console.log('Fetched projects:', projectsData); // Debug log
+        
+        setProjects(projectsData);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   return (
@@ -43,21 +59,29 @@ const Sidebar = () => {
         <div className="closebtn" onClick={() => setIsOpen(false)}>&times;</div>
         <Link to="/" onClick={() => setIsOpen(false)}>Splash</Link>
         <Link to="/home" onClick={() => setIsOpen(false)}>Home</Link>
-        {loading ? (
-          <p>Loading projects...</p>
-        ) : error ? (
-          <p>{error}</p>
-        ) : (
-          projects.map(project => (
-            <Link
-              key={project._id}
-              to={`/project/${project._id}`}
-              onClick={() => setIsOpen(false)}
-            >
-              {project.name || `Project ${project._id}`}
-            </Link>
-          ))
-        )}
+        
+        {/* Projects Section */}
+        <div className="projects-section">
+          <h3>My Projects</h3>
+          {loading ? (
+            <p>Loading projects...</p>
+          ) : error ? (
+            <p className="error">Error: {error}</p>
+          ) : projects && projects.length > 0 ? (
+            projects.map(project => (
+              <Link
+                key={project._id}
+                to={`/project/${project._id}`}
+                onClick={() => setIsOpen(false)}
+                className="project-link"
+              >
+                {project.name || `Project ${project._id}`}
+              </Link>
+            ))
+          ) : (
+            <p>No projects found</p>
+          )}
+        </div>
       </div>
     </div>
   );

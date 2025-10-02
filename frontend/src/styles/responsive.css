@@ -1,0 +1,101 @@
+/* Responsive design */
+@media (max-width: 768px) {
+  .home-page main,
+  .profile-page main {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .project-page {
+    grid-template-columns: 1fr;
+  }
+  
+  .project-page aside {
+    order: -1;
+  }
+  
+  nav {
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+  
+  #search {
+    margin: 0.5rem 0;
+    max-width: none;
+    order: 3;
+    flex: 0 0 100%;
+  }
+  
+  .splash-page .card,
+  .SignUp,
+  .LoginForm {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+  
+  .file-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .file-status {
+    align-self: stretch;
+    justify-content: flex-start;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pr-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .pull-request-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  #sidebar-menu {
+    width: 100%;
+    left: -100%;
+  }
+  
+  #sidebar-menu.show {
+    left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-page main,
+  .profile-page main,
+  .project-page main {
+    padding: 0.5rem;
+  }
+  
+  .repository-list,
+  .friends,
+  .activity-feed,
+  .feed,
+  .discussion,
+  .messages,
+  .issues,
+  .files,
+  .project,
+  .project-list,
+  .pull-requests,
+  .stats,
+  .version-history {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+}

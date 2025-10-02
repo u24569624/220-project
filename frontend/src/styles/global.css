@@ -1,30 +1,88 @@
-.show{
-    width: 250px;
-    display:flex;
-    flex-direction: column; 
+/* Global styles and variables */
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --accent-color: #e74c3c;
+  --success-color: #27ae60;
+  --warning-color: #f39c12;
+  --background-color: #ecf0f1;
+  --text-color: #2c3e50;
+  --text-light: #7f8c8d;
+  --white: #ffffff;
+  --border-color: #bdc3c7;
+  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
 }
 
-.close{
-    width:0px;
-    display: none;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.icon{
-    width:35px;
-    height:5px;
-    background-color: black;
-    margin: 6px 0px;
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
 }
 
-#main{
-    display:flex;
-    flex-direction: column;
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+  color: var(--primary-color);
 }
 
-nav{
-    background-color: rgb(155, 155, 155);
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 0.5rem 1rem;
+  transition: var(--transition);
+  font-family: inherit;
 }
 
-body{
-    margin: 0%;
+input, textarea, select {
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+a {
+  color: var(--secondary-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--primary-color);
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.error {
+  color: var(--accent-color);
+  padding: 1rem;
+  background-color: #ffeaea;
+  border-radius: var(--border-radius);
+  margin: 1rem 0;
+  border-left: 4px solid var(--accent-color);
+}
+
+.success {
+  color: var(--success-color);
+  padding: 1rem;
+  background-color: #e8f6ef;
+  border-radius: var(--border-radius);
+  margin: 1rem 0;
+  border-left: 4px solid var(--success-color);
 }

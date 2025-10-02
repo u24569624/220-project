@@ -1,59 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import Files from './Files';
-import Issues from './Issues';
-import PullRequests from './PullRequests';
-import Stats from './Stats';
+// Project.js
+import React from 'react';
 
-const Project = ({ id }) => {
-  const [project, setProject] = useState(null);
-  const [activeTab, setActiveTab] = useState('Code');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    setLoading(true);
-    fetch(`/api/projects/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch project');
-        return res.json();
-      })
-      .then(data => setProject(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  if (loading) return <div>Loading project...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!project) return <div>No project data</div>;
-
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'Code':
-        return <Files projectId={id} />;
-      case 'Issues':
-        return <Issues projectId={id} />;
-      case 'Pull Requests':
-        return <PullRequests />;
-      case 'Settings':
-        return <Stats />;
-      default:
-        return <p>Select a tab</p>;
-    }
-  };
+const Project = ({ _id, name, description, image, type, hashtags }) => {
+  console.log('Project component props:', { _id, name, description, image });
 
   return (
-    <article className="project">
-      <h2>{project.name}</h2>
-      <p>{project.description}</p>
-      <div className="project-tabs">
-        {['Code', 'Issues', 'Pull Requests', 'Settings'].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}>
-            {tab}
-          </button>
-        ))}
-      </div>
-      <div className="tab-content">{renderTabContent()}</div>
-    </article>
+    <section className="project">
+      <h1>{name || 'Unnamed Project'}</h1>
+      {image && image !== '/uploads/img1.png' ? (
+        <img src={image} alt={name} onError={(e) => {
+          e.target.style.display = 'none'; // Hide broken images
+        }} />
+      ) : (
+        <div className="project-placeholder">
+          🚀 Project Image
+        </div>
+      )}
+      <p>{description || 'No description available'}</p>
+      {type && <p>Type: {type}</p>}
+      {hashtags && hashtags.length > 0 && (
+        <div>
+          <strong>Tags:</strong> {hashtags.join(', ')}
+        </div>
+      )}
+    </section>
   );
 };
 

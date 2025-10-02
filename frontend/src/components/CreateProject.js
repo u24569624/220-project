@@ -12,20 +12,18 @@ const CreateProject = ({ onCreate }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-4">
+    <form onSubmit={handleSubmit}>
       <input
         value={name}
         onChange={e => setName(e.target.value)}
         placeholder="Project Name"
-        className="border p-2 w-full mb-2"
       />
       <input
         value={description}
         onChange={e => setDescription(e.target.value)}
         placeholder="Description"
-        className="border p-2 w-full mb-2"
       />
-      <button type="submit" className="bg-green-500 text-white p-2 w-full">Create</button>
+      <button type="submit">Create</button>
     </form>
   );
 };

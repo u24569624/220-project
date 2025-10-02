@@ -1,3 +1,4 @@
+// Messages.js
 import React, { useState, useEffect } from 'react';
 
 const Messages = ({ projectId }) => {
@@ -6,14 +7,28 @@ const Messages = ({ projectId }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!projectId) {
+      setError('No project ID provided');
+      setLoading(false);
+      return;
+    }
+
+    console.log('Messages - Fetching for project:', projectId);
+    
     setLoading(true);
     fetch(`/api/projects/${projectId}/messages`)
       .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch messages');
+        if (!res.ok) throw new Error(`Failed to fetch messages: ${res.status}`);
         return res.json();
       })
-      .then(data => setMessages(data))
-      .catch(err => setError(err.message))
+      .then(data => {
+        console.log('Messages data received:', data);
+        setMessages(data);
+      })
+      .catch(err => {
+        console.error('Error fetching messages:', err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [projectId]);
 
@@ -23,11 +38,18 @@ const Messages = ({ projectId }) => {
   return (
     <section className="messages">
       <h2>Messages</h2>
-      <ul>
-        {messages.map(msg => (
-          <li key={msg.id}>{msg.text} - {msg.time ? new Date(msg.time).toLocaleString() : 'Unknown'}</li>
-        ))}
-      </ul>
+      {messages.length === 0 ? (
+        <p>No messages found</p>
+      ) : (
+        <ul>
+          {messages.map(msg => (
+            <li key={msg._id || msg.id}>
+              <strong>{msg.userName || 'User'}:</strong> {msg.text} 
+              {msg.time && ` - ${new Date(msg.time).toLocaleString()}`}
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 };

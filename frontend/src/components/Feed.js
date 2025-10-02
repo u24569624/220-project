@@ -1,34 +1,57 @@
+// Feed.js
 import React, { useState, useEffect } from 'react';
 import ProjectPreview from './ProjectPreview';
 
-const Feed = ({ userId }) => {
+const Feed = () => {
   const [feedItems, setFeedItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('local');
-  const [sortBy, setSortBy] = useState('date');
 
   useEffect(() => {
-    setLoading(true);
-    const endpoint = tab === 'local' ? `/api/activity/local/${userId}` : '/api/activity/global';
-    fetch(endpoint)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch feed');
-        return res.json();
-      })
-      .then(data => setFeedItems(data))
-      .catch(err => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [userId, tab]);
+    const fetchFeed = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const userId = localStorage.getItem('userId');
+        
+        console.log('Feed - User ID:', userId, 'Tab:', tab);
+        
+        if (tab === 'local' && (!userId || userId === 'undefined')) {
+          setError('User not logged in');
+          setLoading(false);
+          return;
+        }
 
-  const handleSort = (e) => {
-    setSortBy(e.target.value);
-    const sortedItems = [...feedItems].sort((a, b) => {
-      if (sortBy === 'date') return new Date(b.date) - new Date(a.date);
-      return 0; // Add more sorting logic if needed
-    });
-    setFeedItems(sortedItems);
-  };
+        // USE /api/ PREFIX LIKE PROFILEPAGE
+        const endpoint = tab === 'local' 
+          ? `/api/activity/local/${userId}` 
+          : '/api/activity/global';
+        
+        console.log('Fetching from endpoint:', endpoint);
+        
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch feed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Feed data received:', data);
+        setFeedItems(data);
+        
+      } catch (err) {
+        console.error('Error fetching feed:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeed();
+  }, [tab]);
+
+  console.log('Feed State - loading:', loading, 'error:', error, 'items:', feedItems);
 
   if (loading) return <div>Loading feed...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -37,19 +60,35 @@ const Feed = ({ userId }) => {
     <section className="feed">
       <div className="feed-controls">
         <div className="feed-tabs">
-          <button onClick={() => setTab('local')}>Local</button>
-          <button onClick={() => setTab('global')}>Global</button>
+          <button 
+            onClick={() => setTab('local')}
+            className={tab === 'local' ? 'active' : ''}
+          >
+            Local
+          </button>
+          <button 
+            onClick={() => setTab('global')}
+            className={tab === 'global' ? 'active' : ''}
+          >
+            Global
+          </button>
         </div>
-        <select className="sort-select" value={sortBy} onChange={handleSort}>
-          <option value="date">Date</option>
-          {/* Add more options (e.g., popularity) if time permits */}
-        </select>
       </div>
-      <ul className="feed-list">
-        {feedItems.map(item => (
-          <ProjectPreview key={item.id} user={item.user} desc={item.desc} date={item.date} />
-        ))}
-      </ul>
+      
+      <div className="feed-list">
+        {feedItems && feedItems.length > 0 ? (
+          feedItems.map((item, index) => (
+            <div key={item._id || index} className="feed-item">
+              <strong>{item.userName || 'User'}</strong>: {item.type}
+              <br />
+              <small>{new Date(item.date).toLocaleString()}</small>
+              <hr />
+            </div>
+          ))
+        ) : (
+          <p>No activities found in feed</p>
+        )}
+      </div>
     </section>
   );
 };

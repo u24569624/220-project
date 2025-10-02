@@ -27,22 +27,21 @@ const RepositoryList = () => {
   };
 
   return (
-    <section className="repository-list bg-white p-4 rounded shadow">
-      <h2 className="text-lg font-semibold">Repositories</h2>
+    <section >
+      <h2>Repositories</h2>
       <CreateProject onCreate={handleAddProject} />
-      <div className="repository-controls mt-2">
+      <div>
         <input
           type="text"
           placeholder="Filter repositories..."
           value={filter}
           onChange={e => setFilter(e.target.value)}
-          className="border p-2 w-full mb-2"
         />
-        <button className="bg-blue-500 text-white p-2 w-full">Add</button>
+        <button>Add</button>
       </div>
       <ul className="repo-list">
         {filteredProjects.map(repo => (
-          <li key={repo._id} className="repo-item p-2 border-b">
+          <li key={repo._id}>
             {repo.name} - {repo.description}
           </li>
         ))}
