@@ -1,6 +1,6 @@
 // SignUpForm.js
 import React, { useState } from 'react';
-//import '../styles/tailwind.css';
+import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,6 +8,7 @@ const SignUpForm = () => {
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
@@ -24,16 +25,16 @@ const SignUpForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      fetch('/api/auth/signup', {
+      const response = fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, name: email.split('@')[0] }), // Simplified name
+        body: JSON.stringify({ email, password}), // Simplified name
       })
         .then(res => res.json())
         .then(data => {
           if (data.success) {
             localStorage.setItem('userId', data.user.id);
-            window.location.href = '/home';
+            navigate(`/home`); 
           }
         });
     }
@@ -76,7 +77,7 @@ const SignUpForm = () => {
           <label>
             <input type="checkbox" name="remember" /> Remember me
           </label>
-          <button type="submit" className="bg-green-500 text-white p-2 w-full">Sign Up</button>
+          <button type="submit">Sign Up</button>
         </form>
         <div className="mt-2">
           <button type="button" className="cancelbtn bg-gray-300 p-2" onClick={() => setIsOpen(false)}>Cancel</button>
