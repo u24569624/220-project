@@ -1,7 +1,6 @@
 // RepoList.js
 import React, { useState, useEffect } from 'react';
 import CreateProject from './CreateProject';
-//import '../styles/tailwind.css'; // Replace RepoList.css
 
 const RepositoryList = () => {
   const userId = localStorage.getItem('userId');

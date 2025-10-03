@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from './sidebar.js';
-import '../styles/Header.css';
-import '../styles/global.css';
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');

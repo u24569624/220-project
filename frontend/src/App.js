@@ -1,4 +1,3 @@
-// frontend/src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import SplashPage from './pages/SplashPage';
@@ -6,11 +5,12 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import ProjectPage from './pages/ProjectPage';
 
+// Correct import paths - all should start with ./
 import './styles/global.css';
 import './styles/layout.css';
-import './styles/head.css';
+import './styles/head.css'; 
 import './styles/sidebar.css';
-import './styles/forms.css';
+import './styles/Forms.css';
 import './styles/components.css';
 import './styles/feed.css';
 import './styles/discussion.css';

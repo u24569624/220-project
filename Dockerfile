@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
+RUN ls -la /app/frontend/src/styles/
+RUN ls -la /app/frontend/src/components/
 # Build frontend
 RUN npm run build
 
