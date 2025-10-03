@@ -7,7 +7,6 @@
   flex-direction: column;
 }
 
-/* Header should be full width */
 .project-page > .header {
   width: 100%;
 }

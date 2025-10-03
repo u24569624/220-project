@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, '../dist')));
 const uri = process.env.MONGO_URI;
 
 if (!uri) {
-  console.error('❌ MONGO_URI is not defined in environment variables');
+  console.error('MONGO_URI is not defined in environment variables');
   console.error('Please check your .env file');
   process.exit(1);
 }
@@ -25,15 +25,15 @@ let client;
 async function connectToDB() {
   try {
     if (!db) {
-      console.log('🔗 Connecting to MongoDB...');
+      console.log('Connecting to MongoDB...');
       client = new MongoClient(uri);
       await client.connect();
       db = client.db();
-      console.log('✅ Connected to MongoDB successfully');
+      console.log('Connected to MongoDB successfully');
     }
     return db;
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
+    console.error('MongoDB connection failed:', error.message);
     process.exit(1);
   }
 }
@@ -44,7 +44,7 @@ app.post('/api/auth/signin', async (req, res) => {
     const { username, password } = req.body;
     const db = await connectToDB();
     
-    console.log('🔐 API Signin attempt for:', username);
+    console.log('API Signin attempt for:', username);
     
     const user = await db.collection('users').findOne({ 
       $or: [
@@ -54,7 +54,7 @@ app.post('/api/auth/signin', async (req, res) => {
     });
     
     if (user && user.password === password) {
-      console.log('✅ API Signin successful for user:', user.username || user.email);
+      console.log('API Signin successful for user:', user.username || user.email);
       res.json({ 
         success: true, 
         user: { 
@@ -64,7 +64,7 @@ app.post('/api/auth/signin', async (req, res) => {
         } 
       });
     } else {
-      console.log('❌ API Signin failed: Invalid credentials');
+      console.log('API Signin failed: Invalid credentials');
       res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
   } catch (error) {
@@ -78,7 +78,7 @@ app.post('/api/auth/signup', async (req, res) => {
     const { email, password, name } = req.body;
     const db = await connectToDB();
     
-    console.log('📝 API Signup attempt for:', email);
+    console.log('API Signup attempt for:', email);
     
     const existingUser = await db.collection('users').findOne({ 
       $or: [
@@ -197,7 +197,7 @@ app.post('/api/users/:id/friends', async (req, res) => {
     const { friendId } = req.body;
     const result = await db.collection('users').updateOne(
       { _id: new ObjectId(req.params.id) },
-      { $addToSet: { friends: new ObjectId(friendId) } }
+      { $addToSet: { friends: new ObjectId(friendId) } }// Add to array, avoid duplicates
     );
     if (result.matchedCount > 0) {
       res.json({ success: true });
@@ -534,13 +534,13 @@ async function startServer() {
   try {
     await connectToDB();
     app.listen(port, () => {
-      console.log(`🚀 Server running on port ${port}`);
-      console.log(`🌐 Frontend: http://localhost:${port}`);
-      console.log(`🔗 API: http://localhost:${port}/api/...`);
-      console.log('✅ All routes are prefixed with /api');
+      console.log(`Server running on port ${port}`);
+      console.log(`Frontend: http://localhost:${port}`);
+      console.log(`API: http://localhost:${port}/api/...`);
+      console.log('All routes are prefixed with /api');
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error.message);
+    console.error('Failed to start server:', error.message);
     process.exit(1);
   }
 }

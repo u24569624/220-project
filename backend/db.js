@@ -22,7 +22,6 @@ async function connectToDB() {
   return db;
 }
 
-// Existing methods (based on your seed.js)
 async function createUser(userData) {
   const db = await connectToDB();
   const result = await db.collection('users').insertOne(userData);
@@ -46,7 +45,6 @@ async function createCheckIn(checkInData) {
   return result.insertedId.toString();
 }
 
-// New methods for updated seed.js
 async function createActivity(activityData) {
   const db = await connectToDB();
   const result = await db.collection('activities').insertOne(activityData);

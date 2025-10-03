@@ -5,7 +5,6 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import ProjectPage from './pages/ProjectPage';
 
-// Correct import paths - all should start with ./
 import './styles/global.css';
 import './styles/layout.css';
 import './styles/head.css'; 

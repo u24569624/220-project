@@ -10,7 +10,7 @@ import Friends from '../components/Friends';
 import FriendRequest from '../components/FriendRequest';
 
 const ProfilePage = () => {
-  const { userId: paramUserId } = useParams();
+  const { userId: paramUserId } = useParams();//returns userId
   const storedUserId = localStorage.getItem('userId');
   const userId = paramUserId || storedUserId;
   console.log('ProfilePage userId:', userId); // Debug
@@ -74,11 +74,11 @@ const ProfilePage = () => {
     <div className="profile-page">
       <Header />
       <main>
-        <Profile id={userId} {...user} /> {/* Use id prop as expected */}
+        <Profile id={userId} {...user} /> 
         <EditProfile {...user} onSave={handleEdit} />
         <Friends friendIds={user.friends || []} />
         <FriendRequest targetId={userId} />
-        <ProjectList userId={userId} projectIds={user.projects || []} /> {/* Consistent prop name */}
+        <ProjectList userId={userId} projectIds={user.projects || []} /> 
         <ActivityFeed activities={activities} />
       </main>
     </div>
