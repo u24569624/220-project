@@ -18,7 +18,6 @@ const Sidebar = () => {
           return;
         }
 
-        // Validate userId format (MongoDB ObjectId)
         if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
           setError('Invalid user ID format');
           setLoading(false);

@@ -23,7 +23,6 @@ const Feed = () => {
           return;
         }
 
-        // USE /api/ PREFIX LIKE PROFILEPAGE
         const endpoint = tab === 'local' 
           ? `/api/activity/local/${userId}` 
           : '/api/activity/global';

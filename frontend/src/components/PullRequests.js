@@ -14,7 +14,6 @@ const PullRequests = ({ projectId }) => {
     console.log('PullRequests - Fetching for project:', projectId);
     
     setLoading(true);
-    // REMOVE /api from the URL
     fetch(`/projects/${projectId}/pulls`)
       .then(res => {
         if (!res.ok) throw new Error(`Failed to fetch pull requests: ${res.status}`);

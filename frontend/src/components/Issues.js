@@ -14,7 +14,6 @@ const Issues = ({ projectId }) => {
     console.log('Issues - Fetching for project:', projectId);
     
     setLoading(true);
-    // REMOVE /api from the URL
     fetch(`/projects/${projectId}/issues`)
       .then(res => {
         if (!res.ok) throw new Error(`Failed to fetch issues: ${res.status}`);

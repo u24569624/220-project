@@ -14,7 +14,6 @@ const Stats = ({ projectId }) => {
     console.log('Stats - Fetching for project:', projectId);
     
     setLoading(true);
-    // REMOVE /api from the URL
     fetch(`/projects/${projectId}/stats`)
       .then(res => {
         if (!res.ok) throw new Error(`Failed to fetch stats: ${res.status}`);
