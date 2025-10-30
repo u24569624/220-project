@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"  # Frontend
+      - "5000:5000"  # Backend API
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb+srv://test-user:test-password@cluster0.0jkb15d.mongodb.net/version-control-db?retryWrites=true&w=majority&appName=Cluster0
