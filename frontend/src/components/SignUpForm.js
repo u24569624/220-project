@@ -1,9 +1,8 @@
-// SignUpForm.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const SignUpForm = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
@@ -12,74 +11,92 @@ const SignUpForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
-    if (!password) newErrors.password = 'Password is required';
-    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';
-    if (!repeatPassword) newErrors.repeatPassword = 'Repeat password is required';
-    else if (repeatPassword !== password) newErrors.repeatPassword = 'Passwords do not match';
+    if (!email) newErrors.email = 'Email required';
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Invalid email';
+
+    if (!password) newErrors.password = 'Password required';
+    else if (password.length < 6) newErrors.password = '≥ 6 characters';
+
+    if (!repeatPassword) newErrors.repeatPassword = 'Repeat password required';
+    else if (repeatPassword !== password) newErrors.repeatPassword = 'Passwords don’t match';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validate()) {
-      const response = fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password}), // Simplified name
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            localStorage.setItem('userId', data.user.id);
-            navigate(`/home`); 
-          }
-        });
+    if (!validate()) return;
+
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem('userId', data.user.id);
+      navigate('/home');
     }
   };
 
   return (
-    <div className="SignUp">
-      <button onClick={() => setIsOpen(true)} className="bg-green-500 text-white p-2">Sign Up</button>
-      <div className={`${isOpen ? 'block' : 'hidden'}`}>
-        <h1>Sign Up</h1>
-        <p>Please fill in this form to create an account.</p>
-        <form onSubmit={handleSubmit}>
-          <label><b>Email</b></label>
-          <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-          {errors.email && <p>{errors.email}</p>}
-          <label><b>Password</b></label>
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-          />
-          {errors.password && <p>{errors.password}</p>}
-          <label><b>Repeat Password</b></label>
-          <input
-            type="password"
-            placeholder="Repeat Password"
-            value={repeatPassword}
-            onChange={e => setRepeatPassword(e.target.value)}
-          />
-          {errors.repeatPassword && <p>{errors.repeatPassword}</p>}
-          <label>
-            <input type="checkbox" name="remember" /> Remember me
-          </label>
-          <button type="submit">Sign Up</button>
-        </form>
-        <div>
-          <button type="button" onClick={() => setIsOpen(false)}>Cancel</button>
+    <div className="auth-wrapper">
+      <button className="auth-trigger btn primary" onClick={() => setOpen(true)}>
+        Get Started
+      </button>
+
+      {open && (
+        <div className="modal-backdrop" onClick={() => setOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h2>Sign Up</h2>
+            <form onSubmit={handleSubmit} className="auth-form">
+              <label htmlFor="signup-email">Email</label>
+              <input
+                id="signup-email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+              />
+              {errors.email && <p className="error-msg">{errors.email}</p>}
+
+              <label htmlFor="signup-pass">Password</label>
+              <input
+                id="signup-pass"
+                type="password"
+                placeholder="••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+              />
+              {errors.password && <p className="error-msg">{errors.password}</p>}
+
+              <label htmlFor="signup-repeat">Repeat Password</label>
+              <input
+                id="signup-repeat"
+                type="password"
+                placeholder="••••••"
+                value={repeatPassword}
+                onChange={e => setRepeatPassword(e.target.value)}
+                required
+              />
+              {errors.repeatPassword && <p className="error-msg">{errors.repeatPassword}</p>}
+
+              <div className="auth-actions">
+                <button type="submit" className="btn primary">
+                  Create Account
+                </button>
+                <button type="button" onClick={() => setOpen(false)} className="btn secondary">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

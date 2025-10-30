@@ -7,15 +7,11 @@ import ProjectPage from './pages/ProjectPage';
 
 import './styles/global.css';
 import './styles/layout.css';
-import './styles/head.css'; 
-import './styles/sidebar.css';
-import './styles/Forms.css';
 import './styles/components.css';
 import './styles/feed.css';
-import './styles/discussion.css';
-import './styles/project-components.css';
-import './styles/splash.css';
+import './styles/repositories.css';
 import './styles/responsive.css';
+import './styles/sidebar.css';
 
 const App = () => {
   return (

@@ -1,101 +1,129 @@
-/* Responsive design */
-@media (max-width: 768px) {
-  .home-page main,
+/* ===========================
+   RESPONSIVE DESIGN
+=========================== */
+
+/* Tablets and below */
+@media (max-width: 1024px) {
+  .home-page main {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .project-page main,
+  .project-page-container > .project-content,
   .profile-page main {
-    flex-direction: column;
-    padding: 1rem;
-    gap: 1rem;
-  }
-  
-  .project-page {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
   
-  .project-page aside {
-    order: -1;
-  }
-  
-  nav {
-    flex-wrap: wrap;
-    padding: 1rem;
-    gap: 0.5rem;
-  }
-  
-  #search {
-    margin: 0.5rem 0;
-    max-width: none;
-    order: 3;
-    flex: 0 0 100%;
-  }
-  
-  .splash-page .card,
-  .SignUp,
-  .LoginForm {
-    width: 100%;
-    margin: 0.5rem 0;
-  }
-  
-  .file-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .file-status {
-    align-self: stretch;
-    justify-content: flex-start;
-  }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .pr-meta {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  
-  .pull-request-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  #sidebar-menu {
-    width: 100%;
-    left: -100%;
-  }
-  
-  #sidebar-menu.show {
-    left: 0;
+  .repo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }
 
+/* Tablets */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .home-page main,
+  .project-page main,
+  .profile-page main {
+    padding: 1rem;
+  }
+  
+  .header-nav {
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  
+  .search-container {
+    order: 3;
+    flex: 0 0 100%;
+    margin: 0.5rem 0 0 0;
+    max-width: none;
+  }
+  
+  .feed-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .feed-sorting {
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .repo-controls {
+    flex-direction: column;
+  }
+}
+
+/* Mobile */
 @media (max-width: 480px) {
   .home-page main,
-  .profile-page main,
-  .project-page main {
+  .project-page main,
+  .profile-page main {
     padding: 0.5rem;
   }
   
-  .repository-list,
-  .friends,
-  .activity-feed,
+  .card,
   .feed,
-  .discussion,
-  .messages,
-  .issues,
-  .files,
-  .project,
-  .project-list,
-  .pull-requests,
-  .stats,
-  .version-history {
+  .repository-section {
     padding: 1rem;
     margin-bottom: 1rem;
   }
   
-  .card {
-    padding: 1rem;
+  .repo-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .feed-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .activity-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .hashtags {
+    gap: 0.25rem;
+  }
+  
+  .hashtag, .repo-tag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+  }
+}
+
+/* Large screens */
+@media (min-width: 1440px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  .home-page main {
+    grid-template-columns: 1fr 400px;
+  }
+  
+  .repo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   }
 }

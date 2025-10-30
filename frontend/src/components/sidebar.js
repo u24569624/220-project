@@ -18,12 +18,6 @@ const Sidebar = () => {
           return;
         }
 
-        if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
-          setError('Invalid user ID format');
-          setLoading(false);
-          return;
-        }
-
         const response = await fetch(`/api/users/${userId}/projects`);
         
         if (!response.ok) {
@@ -31,7 +25,7 @@ const Sidebar = () => {
         }
         
         const projectsData = await response.json();
-        console.log('Fetched projects:', projectsData); // Debug log
+        console.log('Fetched projects:', projectsData);
         
         setProjects(projectsData);
       } catch (error) {
@@ -45,42 +39,130 @@ const Sidebar = () => {
     fetchProjects();
   }, []);
 
-  return (
-    <div id="sidebar-container">
-      <div id="sidebar-open" onClick={() => setIsOpen(true)}>
-        <div className="icon"></div>
-        <div className="icon"></div>
-        <div className="icon"></div>
-      </div>
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const sidebar = document.getElementById('sidebar-menu');
+      const hamburger = document.getElementById('sidebar-open');
+      
+      if (isOpen && sidebar && !sidebar.contains(event.target) && hamburger && !hamburger.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
 
-      <div id="sidebar-menu" className={`${isOpen ? 'show' : 'close'}`}>
-        <div className="closebtn" onClick={() => setIsOpen(false)}>&times;</div>
-        <Link to="/" onClick={() => setIsOpen(false)}>Splash</Link>
-        <Link to="/home" onClick={() => setIsOpen(false)}>Home</Link>
-        
-        {/* Projects Section */}
-        <div className="projects-section">
-          <h3>My Projects</h3>
-          {loading ? (
-            <p>Loading projects...</p>
-          ) : error ? (
-            <p className="error">Error: {error}</p>
-          ) : projects && projects.length > 0 ? (
-            projects.map(project => (
-              <Link
-                key={project._id}
-                to={`/project/${project._id}`}
-                onClick={() => setIsOpen(false)}
-                className="project-link"
-              >
-                {project.name || `Project ${project._id}`}
-              </Link>
-            ))
-          ) : (
-            <p>No projects found</p>
-          )}
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  return (
+    <div className="sidebar-container">
+      {/* Hamburger Menu */}
+      <button 
+        id="sidebar-open" 
+        className="hamburger-btn"
+        onClick={() => setIsOpen(true)}
+        aria-label="Open menu"
+      >
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+      </button>
+
+      {/* Sidebar Overlay */}
+      {isOpen && (
+        <div 
+          className="sidebar-overlay"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
+
+      {/* Sidebar Menu */}
+      <aside 
+        id="sidebar-menu" 
+        className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}
+      >
+        <div className="sidebar-header">
+          <h3>Navigation</h3>
+          <button 
+            className="sidebar-close"
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+          >
+            &times;
+          </button>
         </div>
-      </div>
+
+        <nav className="sidebar-nav">
+          <div className="nav-section">
+            <h4 className="nav-section-title">Main</h4>
+            <Link to="/home" onClick={() => setIsOpen(false)} className="nav-link">
+              <span className="nav-icon">🏠</span>
+              Home
+            </Link>
+            <Link to="" onClick={() => setIsOpen(false)} className="nav-link">
+              <span className="nav-icon">👤</span>
+              My Profile
+            </Link>
+            <Link to="" onClick={() => setIsOpen(false)} className="nav-link">
+              <span className="nav-icon">🔍</span>
+              Search
+            </Link>
+          </div>
+
+          {/* Projects Section */}
+          <div className="nav-section">
+            <h4 className="nav-section-title">My Projects</h4>
+            {loading ? (
+              <div className="sidebar-loading">Loading projects...</div>
+            ) : error ? (
+              <div className="sidebar-error">Error loading projects</div>
+            ) : projects && projects.length > 0 ? (
+              projects.map(project => (
+                <Link
+                  key={project._id}
+                  to={`/project/${project._id}`}
+                  onClick={() => setIsOpen(false)}
+                  className="nav-link project-link"
+                  title={project.description}
+                >
+                  <span className="nav-icon">📁</span>
+                  <span className="project-name">
+                    {project.name || `Project ${project._id}`}
+                  </span>
+                  {project.version && (
+                    <span className="project-version">v{project.version}</span>
+                  )}
+                </Link>
+              ))
+            ) : (
+              <div className="sidebar-empty">
+                No projects yet
+                <Link 
+                  to="/create-project" 
+                  className="create-project-btn"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Create your first project
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="nav-section">
+            <h4 className="nav-section-title">Actions</h4>
+            <Link to="/create-project" onClick={() => setIsOpen(false)} className="nav-link highlight">
+              <span className="nav-icon">➕</span>
+              Create New Project
+            </Link>
+          </div>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="user-info">
+            <small>User ID: {localStorage.getItem('userId')?.substring(0, 8)}...</small>
+          </div>
+        </div>
+      </aside>
     </div>
   );
 };

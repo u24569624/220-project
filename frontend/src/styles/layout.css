@@ -1,17 +1,28 @@
-/* Layout components */
+/* ===========================
+   1. MAIN LAYOUT PAGES
+=========================== */
 .home-page,
 .profile-page,
-.project-page {
+.project-page,
+.project-page-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-.project-page > .header {
+.home-page main {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
   width: 100%;
+  flex: 1;
 }
 
-.project-page main {
+.project-page main,
+.project-page-container > .project-content {
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 2rem;
@@ -26,25 +37,168 @@
   padding: 1rem;
 }
 
-/* Fix for ProjectPage specific layout */
-.project-page-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.project-page-container > header {
-  width: 100%;
-  flex-shrink: 0;
-}
-
-.project-page-container > .project-content {
+.profile-page main {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 280px 1fr;
   gap: 2rem;
-  flex: 1;
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
+  flex: 1;
+}
+
+/* ===========================
+   2. HEADER & NAVIGATION
+=========================== */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  background: var(--nav-bg);
+  color: var(--nav-text);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+.logo-link:hover {
+  transform: translateY(-1px);
+}
+
+.nav-logo {
+  height: 40px;
+  width: auto;
+}
+
+.site-title {
+  color: var(--nav-text);
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Search Container */
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  margin: 0 2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: var(--nav-text);
+  border-radius: 25px;
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+.search-input::placeholder {
+  color: rgba(255,255,255,0.7);
+}
+
+.search-input:focus {
+  outline: none;
+  background: rgba(255,255,255,0.2);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+}
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 0.5rem;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  text-decoration: none;
+  color: var(--text-color);
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.search-result-item:hover {
+  background: var(--background-color);
+  text-decoration: none;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+/* User Menu */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  color: var(--nav-text);
+  transition: var(--transition);
+}
+
+.profile-link:hover {
+  color: var(--accent-hover);
+  transform: scale(1.05);
+}
+
+.logout-btn {
+  background: transparent;
+  color: var(--nav-text);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: var(--accent-color);
+}
+
+.theme-toggle {
+  background: transparent;
+  color: var(--nav-text);
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.1);
+  transform: rotate(15deg);
 }

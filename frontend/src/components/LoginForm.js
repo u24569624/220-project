@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  const [open, setOpen] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -14,19 +15,16 @@ const LoginForm = () => {
     if (loading) return;
     setLoading(true);
     try {
-      const response = await fetch('/api/auth/signin', {
+      const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const data = await response.json();
-      console.log('Sign-in success:', data);
-      const userId = data.user.id; // Use data.user.id from the response
-      localStorage.setItem('userId', userId); // Store the userId
-      navigate(`/home`); // Navigate to profile
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      localStorage.setItem('userId', data.user.id);
+      navigate('/home');
     } catch (err) {
-      console.error('Sign-in failed:', err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -34,13 +32,54 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div><label>Username:</label><input type="text" value={username} onChange={(e) => setUsername(e.target.value)} /></div>
-      <div><label>Password:</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-      <button type="submit" disabled={loading}>Sign In</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {loading && <p>Signing in...</p>}
-    </form>
+    <div className="auth-wrapper">
+
+      {/* Trigger button */}
+      <button className="auth-trigger btn secondary" onClick={() => setOpen(true)}>
+        Login
+      </button>
+
+      {/* Modal */}
+      {open && (
+        <div className="modal-backdrop" onClick={() => setOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Login</h2>
+
+            <form onSubmit={handleSubmit} className="auth-form">
+              <label htmlFor="login-username">Username</label>
+              <input
+                id="login-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+
+              <label htmlFor="login-password">Password</label>
+              <input
+                id="login-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+
+              {error && <p className="error-msg">{error}</p>}
+              {loading && <p className="info-msg">Signing in…</p>}
+
+              <div className="auth-actions">
+                <button type="submit" disabled={loading} className="btn primary">
+                  Sign In
+                </button>
+                <button type="button" onClick={() => setOpen(false)} className="btn secondary">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
