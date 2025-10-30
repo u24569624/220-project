@@ -1,5 +1,5 @@
 // HomePage.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import RepositoryList from '../components/RepoList';
 import Header from '../components/Header';
 import Feed from '../components/Feed';
@@ -8,11 +8,27 @@ const HomePage = () => {
   const userId = localStorage.getItem('userId');
   const [projects, setProjects] = useState([]);
 
-  useEffect(() => {
-    fetch(`/api/users/${userId}/projects`)
-      .then(res => res.json())
-      .then(setProjects);
+  // Use useCallback to prevent infinite re-renders
+  const fetchProjects = useCallback(async () => {
+    if (!userId) return;
+    
+    try {
+      const response = await fetch(`/api/users/${userId}/projects`);
+      if (response.ok) {
+        const data = await response.json();
+        setProjects(data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setProjects([]);
+    }
   }, [userId]);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]); // Only re-run when fetchProjects changes
+
+  console.log('HomePage rendering'); // Add this to check re-renders
 
   return (
     <div className="home-page">

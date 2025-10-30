@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// Feed.js
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 const Feed = () => {
@@ -7,59 +8,62 @@ const Feed = () => {
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('local');
 
-  useEffect(() => {
-    const fetchFeed = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const userId = localStorage.getItem('userId');
-        
-        if (tab === 'local' && (!userId || userId === 'undefined')) {
-          setError('Please log in to see local feed');
-          setLoading(false);
-          return;
-        }
-
-        // Simulate API call with mock data for now
-        const mockData = [
-          {
-            _id: '1',
-            type: 'checkin',
-            userName: 'John Doe',
-            projectName: 'Web App',
-            projectId: '123',
-            message: 'Fixed authentication bug',
-            createdAt: new Date().toISOString(),
-            tags: ['javascript', 'react']
-          },
-          {
-            _id: '2',
-            type: 'create',
-            userName: 'Jane Smith',
-            projectName: 'Mobile App',
-            projectId: '124',
-            message: 'Initial project setup',
-            createdAt: new Date(Date.now() - 3600000).toISOString(),
-            tags: ['react-native', 'typescript']
-          }
-        ];
-
-        // Simulate API delay
-        setTimeout(() => {
-          setFeedItems(mockData);
-          setLoading(false);
-        }, 1000);
-        
-      } catch (err) {
-        console.error('Error fetching feed:', err);
-        setError('Failed to load feed');
+  const fetchFeed = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const userId = localStorage.getItem('userId');
+      
+      if (tab === 'local' && (!userId || userId === 'undefined')) {
+        setError('Please log in to see local feed');
         setLoading(false);
+        return;
       }
-    };
 
-    fetchFeed();
+      // Use mock data to prevent API issues
+      const mockData = [
+        {
+          _id: '1',
+          type: 'checkin',
+          userName: 'John Doe',
+          projectName: 'Web App',
+          projectId: '123',
+          message: 'Fixed authentication bug',
+          createdAt: new Date().toISOString(),
+          tags: ['javascript', 'react']
+        },
+        {
+          _id: '2', 
+          type: 'create',
+          userName: 'Jane Smith',
+          projectName: 'Mobile App',
+          projectId: '124',
+          message: 'Initial project setup',
+          createdAt: new Date(Date.now() - 3600000).toISOString(),
+          tags: ['react-native', 'typescript']
+        }
+      ];
+
+      // Simulate API delay
+      setTimeout(() => {
+        setFeedItems(mockData);
+        setLoading(false);
+      }, 500);
+      
+    } catch (err) {
+      console.error('Error fetching feed:', err);
+      setError('Failed to load feed');
+      setLoading(false);
+    }
   }, [tab]);
 
+  useEffect(() => {
+    fetchFeed();
+  }, [fetchFeed]);
+
+  console.log('Feed rendering, tab:', tab); // Debug log
+
+  // Rest of the component remains the same...
   const formatActivityText = (item) => {
     const userName = item.userName || 'User';
     const projectName = item.projectName || 'project';
@@ -113,7 +117,7 @@ const Feed = () => {
             Local Feed
           </button>
           <button 
-            onClick={() => setTab('global')}
+            onClick={() => setTab('global')} 
             className={tab === 'global' ? 'active' : ''}
           >
             Global Feed

@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import ProjectPage from './pages/ProjectPage';
 
+import './styles/profile.css';
 import './styles/global.css';
 import './styles/layout.css';
 import './styles/components.css';
@@ -12,6 +13,7 @@ import './styles/feed.css';
 import './styles/repositories.css';
 import './styles/responsive.css';
 import './styles/sidebar.css';
+import './styles/project.css';
 
 const App = () => {
   return (

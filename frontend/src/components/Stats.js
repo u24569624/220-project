@@ -14,7 +14,7 @@ const Stats = ({ projectId }) => {
     console.log('Stats - Fetching for project:', projectId);
     
     setLoading(true);
-    fetch(`/projects/${projectId}/stats`)
+    fetch(`/api/projects/${projectId}/stats`)
       .then(res => {
         if (!res.ok) throw new Error(`Failed to fetch stats: ${res.status}`);
         return res.json();
@@ -30,34 +30,68 @@ const Stats = ({ projectId }) => {
       .finally(() => setLoading(false));
   }, [projectId]);
 
-  if (loading) return <div>Loading project stats...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!stats) return <div>No stats available</div>;
+  if (loading) return (
+    <div className="stats-section">
+      <div className="loading flex items-center justify-center p-8">
+        <div className="loading-spinner"></div>
+        <span className="ml-2">Loading project stats...</span>
+      </div>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="stats-section">
+      <div className="error text-error text-center p-4 bg-card-bg rounded-lg shadow">
+        Error: {error}
+      </div>
+    </div>
+  );
+  
+  if (!stats) return (
+    <div className="stats-section">
+      <div className="empty-state text-center p-6 bg-card-bg rounded-lg shadow">
+        <div className="text-4xl mb-2">📊</div>
+        <p className="text-secondary-text">No stats available</p>
+      </div>
+    </div>
+  );
 
   return (
-    <section className="stats">
-      <h2>Project Statistics</h2>
-      <div className="stats-grid">
-        <div className="stat-item">
-          <div className="stat-value">{stats.files || 0}</div>
-          <div className="stat-label">Files</div>
+    <section className="stats-section">
+      <div className="section-header mb-6">
+        <h2 className="text-2xl font-bold">Project Statistics</h2>
+      </div>
+      
+      <div className="stats-grid grid grid-cols-2 gap-4 mb-6">
+        <div className="stat-item card text-center p-4">
+          <div className="stat-value text-2xl font-bold text-accent-color">
+            {stats.files || 0}
+          </div>
+          <div className="stat-label text-secondary-text">Files</div>
         </div>
-        <div className="stat-item">
-          <div className="stat-value">{stats.contributors || 0}</div>
-          <div className="stat-label">Contributors</div>
+        <div className="stat-item card text-center p-4">
+          <div className="stat-value text-2xl font-bold text-accent-color">
+            {stats.contributors || 0}
+          </div>
+          <div className="stat-label text-secondary-text">Contributors</div>
         </div>
-        <div className="stat-item">
-          <div className="stat-value">{stats.checkins || 0}</div>
-          <div className="stat-label">Check-ins</div>
+        <div className="stat-item card text-center p-4">
+          <div className="stat-value text-2xl font-bold text-accent-color">
+            {stats.checkins || 0}
+          </div>
+          <div className="stat-label text-secondary-text">Check-ins</div>
         </div>
-        <div className="stat-item">
-          <div className="stat-value">{stats.issues || 0}</div>
-          <div className="stat-label">Open Issues</div>
+        <div className="stat-item card text-center p-4">
+          <div className="stat-value text-2xl font-bold text-accent-color">
+            {stats.issues || 0}
+          </div>
+          <div className="stat-label text-secondary-text">Open Issues</div>
         </div>
       </div>
+      
       {stats.lastUpdated && (
-        <div className="last-updated">
-          <small>Last updated: {new Date(stats.lastUpdated).toLocaleString()}</small>
+        <div className="last-updated text-center text-secondary-text text-sm">
+          Last updated: {new Date(stats.lastUpdated).toLocaleString()}
         </div>
       )}
     </section>

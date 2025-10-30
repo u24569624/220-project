@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const userId = localStorage.getItem('userId');
-        
         if (!userId) {
           setError('No user logged in');
           setLoading(false);
@@ -35,7 +35,7 @@ const Sidebar = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [userId]);
 
   // Close sidebar when clicking outside
   useEffect(() => {
@@ -52,6 +52,12 @@ const Sidebar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
+  // Handle navigation and close sidebar
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsOpen(false);
+  };
+
   return (
     <div className="sidebar-container">
       {/* Hamburger Menu */}
@@ -61,9 +67,7 @@ const Sidebar = () => {
         onClick={() => setIsOpen(true)}
         aria-label="Open menu"
       >
-        <span className="hamburger-line"></span>
-        <span className="hamburger-line"></span>
-        <span className="hamburger-line"></span>
+        <span className="material-symbols-outlined">menu</span>
       </button>
 
       {/* Sidebar Overlay */}
@@ -86,75 +90,96 @@ const Sidebar = () => {
             onClick={() => setIsOpen(false)}
             aria-label="Close menu"
           >
-            &times;
+            <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
         <nav className="sidebar-nav">
           <div className="nav-section">
             <h4 className="nav-section-title">Main</h4>
-            <Link to="/home" onClick={() => setIsOpen(false)} className="nav-link">
-              <span className="nav-icon">🏠</span>
+            <button 
+              onClick={() => handleNavigation('/home')} 
+              className="nav-link"
+            >
+              <span className="material-symbols-outlined nav-icon">home</span>
               Home
-            </Link>
-            <Link to="/profile" onClick={() => setIsOpen(false)} className="nav-link">
-              <span className="nav-icon">👤</span>
+            </button>
+            <button 
+              onClick={() => handleNavigation(`/profile/${userId}`)} 
+              className="nav-link"
+            >
+              <span className="material-symbols-outlined nav-icon">person</span>
               My Profile
-            </Link>
-            <Link to="/search" onClick={() => setIsOpen(false)} className="nav-link">
-              <span className="nav-icon">🔍</span>
+            </button>
+            <button 
+              onClick={() => handleNavigation('/search')} 
+              className="nav-link"
+            >
+              <span className="material-symbols-outlined nav-icon">search</span>
               Search
-            </Link>
+            </button>
           </div>
 
           {/* Projects Section */}
           <div className="nav-section">
             <h4 className="nav-section-title">My Projects</h4>
             {loading ? (
-              <div className="sidebar-loading">Loading projects...</div>
+              <div className="sidebar-loading">
+                <span className="material-symbols-outlined">progress_activity</span>
+                Loading projects...
+              </div>
             ) : error ? (
-              <div className="sidebar-error">Error loading projects</div>
+              <div className="sidebar-error">
+                <span className="material-symbols-outlined">error</span>
+                Error loading projects
+              </div>
             ) : projects && projects.length > 0 ? (
               projects.map(project => (
-                <Link
+                <button
                   key={project._id}
-                  to={`/project/${project._id}`}
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => handleNavigation(`/project/${project._id}`)}
                   className="nav-link project-link"
                   title={project.description}
                 >
-                  <span className="nav-icon">📁</span>
+                  <span className="material-symbols-outlined nav-icon">folder</span>
                   <span className="project-name">
                     {project.name || `Project ${project._id}`}
                   </span>
-                </Link>
+                </button>
               ))
             ) : (
               <div className="sidebar-empty">
+                <span className="material-symbols-outlined">folder_off</span>
                 No projects yet
-                <Link 
-                  to="/create-project" 
+                <button 
+                  onClick={() => handleNavigation('/create-project')}
                   className="create-project-btn"
-                  onClick={() => setIsOpen(false)}
                 >
+                  <span className="material-symbols-outlined">add</span>
                   Create your first project
-                </Link>
+                </button>
               </div>
             )}
           </div>
 
           <div className="nav-section">
             <h4 className="nav-section-title">Actions</h4>
-            <Link to="/create-project" onClick={() => setIsOpen(false)} className="nav-link highlight">
-              <span className="nav-icon">➕</span>
+            <button 
+              onClick={() => handleNavigation('/create-project')}
+              className="nav-link highlight"
+            >
+              <span className="material-symbols-outlined nav-icon">add_circle</span>
               Create New Project
-            </Link>
+            </button>
           </div>
         </nav>
 
         <div className="sidebar-footer">
           <div className="user-info">
-            <small>User ID: {localStorage.getItem('userId')?.substring(0, 8)}...</small>
+            <small>
+              <span className="material-symbols-outlined">fingerprint</span>
+              ID: {userId?.substring(0, 8)}...
+            </small>
           </div>
         </div>
       </aside>

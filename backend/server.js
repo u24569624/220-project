@@ -524,6 +524,270 @@ app.get('/api/projects/:id/stats', async (req, res) => {
   }
 });
 
+// ===== DELETE PROJECT ROUTE =====
+app.delete('/api/projects/:id', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const projectId = req.params.id;
+    
+    console.log('Attempting to delete project:', projectId);
+    
+    if (!ObjectId.isValid(projectId)) {
+      return res.status(400).json({ success: false, message: 'Invalid project ID' });
+    }
+
+    // First, check if the project exists
+    const project = await db.collection('projects').findOne({ 
+      _id: new ObjectId(projectId) 
+    });
+    
+    if (!project) {
+      return res.status(404).json({ success: false, message: 'Project not found' });
+    }
+
+    // Verify the user is the owner (you can add this check for security)
+    const userId = req.headers['user-id'] || req.body.userId; // You might want to send this from frontend
+    if (userId && project.ownerId.toString() !== userId) {
+      return res.status(403).json({ success: false, message: 'Only project owner can delete the project' });
+    }
+
+    // Delete the project
+    const result = await db.collection('projects').deleteOne({ 
+      _id: new ObjectId(projectId) 
+    });
+
+    if (result.deletedCount === 1) {
+      console.log('Project deleted successfully:', projectId);
+      
+      // Optional: Also delete related data (files, messages, checkins, etc.)
+      try {
+        // Delete related files
+        await db.collection('files').deleteMany({ projectId: projectId });
+        
+        // Delete related messages
+        await db.collection('messages').deleteMany({ projectId: projectId });
+        
+        // Delete related checkins
+        await db.collection('checkins').deleteMany({ projectId: new ObjectId(projectId) });
+        
+        // Delete related activities
+        await db.collection('activities').deleteMany({ projectId: projectId });
+        
+        console.log('Cleaned up related data for project:', projectId);
+      } catch (cleanupError) {
+        console.warn('Some cleanup operations failed, but project was deleted:', cleanupError);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: 'Project deleted successfully' 
+      });
+    } else {
+      console.log('Project not found for deletion:', projectId);
+      res.status(404).json({ success: false, message: 'Project not found' });
+    }
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+  }
+});
+
+// ===== FILE DOWNLOAD ROUTE =====
+app.get('/api/files/:fileId/download', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const fileId = req.params.fileId;
+    
+    console.log('Download request for file:', fileId);
+    
+    if (!ObjectId.isValid(fileId)) {
+      return res.status(400).json({ success: false, message: 'Invalid file ID' });
+    }
+
+    const file = await db.collection('files').findOne({ 
+      _id: new ObjectId(fileId) 
+    });
+    
+    if (!file) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+
+    // If file has content stored (for text files)
+    if (file.content) {
+      res.setHeader('Content-Type', file.mimeType || 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+      res.send(file.content);
+    } 
+    // If file has a URL (for stored files)
+    else if (file.url) {
+      res.redirect(file.url);
+    }
+    // Fallback: create a simple file with file info
+    else {
+      const fileContent = `File: ${file.name}\nProject: ${file.projectId}\nCreated: ${file.createdAt || new Date().toISOString()}\n\nThis is a placeholder file. In a full implementation, actual file content would be here.`;
+      
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="${file.name}.txt"`);
+      res.send(fileContent);
+    }
+    
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+  }
+});
+
+// ===== GET FILE INFO ROUTE =====
+app.get('/api/files/:fileId', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const fileId = req.params.fileId;
+    
+    if (!ObjectId.isValid(fileId)) {
+      return res.status(400).json({ success: false, message: 'Invalid file ID' });
+    }
+
+    const file = await db.collection('files').findOne({ 
+      _id: new ObjectId(fileId) 
+    });
+    
+    if (!file) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+
+    res.json({
+      ...file,
+      _id: file._id.toString()
+    });
+    
+  } catch (error) {
+    console.error('Error fetching file:', error);
+    res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+  }
+});
+
+// ===== DEBUG ROUTES =====
+app.get('/api/debug/routes', (req, res) => {
+  const routes = [
+    '/api/search',
+    '/api/search/users', 
+    '/api/users/:id',
+    '/api/projects/:id',
+    '/api/auth/signin',
+    '/api/auth/signup'
+  ];
+  res.json({ 
+    message: 'Server is running',
+    availableRoutes: routes,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Test if search route exists
+app.get('/api/debug/search-test', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const users = await db.collection('users').find({}).limit(5).toArray();
+    res.json({
+      message: 'Search test route works',
+      userCount: users.length,
+      sampleUsers: users.map(u => ({
+        id: u._id.toString(),
+        name: u.name,
+        username: u.username,
+        email: u.email
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ===== FRIEND MANAGEMENT ROUTES =====
+
+// Send friend request
+app.post('/api/users/:id/friend-request', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { targetUserId } = req.body;
+    const userId = req.params.id;
+
+    // Check if users exist
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+    const targetUser = await db.collection('users').findOne({ _id: new ObjectId(targetUserId) });
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if already friends
+    if (user.friends && user.friends.includes(targetUserId)) {
+      return res.status(400).json({ success: false, message: 'Already friends' });
+    }
+
+    // Add to pending requests (you might want a separate collection for this)
+    await db.collection('users').updateOne(
+      { _id: new ObjectId(targetUserId) },
+      { $addToSet: { friendRequests: userId } }
+    );
+
+    res.json({ success: true, message: 'Friend request sent' });
+  } catch (error) {
+    console.error('Friend request error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Remove friend
+app.delete('/api/users/:id/friends', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const { friendId } = req.body;
+    const userId = req.params.id;
+
+    // Remove friend from both users
+    await db.collection('users').updateOne(
+      { _id: new ObjectId(userId) },
+      { $pull: { friends: new ObjectId(friendId) } }
+    );
+
+    await db.collection('users').updateOne(
+      { _id: new ObjectId(friendId) },
+      { $pull: { friends: new ObjectId(userId) } }
+    );
+
+    res.json({ success: true, message: 'Friend removed' });
+  } catch (error) {
+    console.error('Remove friend error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Get friend requests
+app.get('/api/users/:id/friend-requests', async (req, res) => {
+  try {
+    const db = await connectToDB();
+    const userId = req.params.id;
+
+    const user = await db.collection('users').findOne({ _id: new ObjectId(userId) });
+    
+    if (!user || !user.friendRequests) {
+      return res.json([]);
+    }
+
+    // Get details of users who sent requests
+    const requestPromises = user.friendRequests.map(requestId =>
+      db.collection('users').findOne({ _id: new ObjectId(requestId) })
+    );
+    const requests = await Promise.all(requestPromises);
+
+    res.json(requests.filter(req => req !== null));
+  } catch (error) {
+    console.error('Get friend requests error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 // ===== CATCH-ALL ROUTE (MUST BE LAST) =====
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
