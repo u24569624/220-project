@@ -11,13 +11,16 @@
 .hamburger-btn {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   background: none;
   border: none;
-  padding: 0.5rem;
+  padding: 8px;
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   transition: var(--transition);
+  width: 40px;
+  height: 40px;
+  justify-content: center;
 }
 
 .hamburger-btn:hover {
@@ -30,10 +33,6 @@
   background: var(--nav-text);
   border-radius: 2px;
   transition: var(--transition);
-}
-
-.hamburger-btn:hover .hamburger-line {
-  background: var(--accent-color);
 }
 
 /* Sidebar Overlay */
@@ -57,7 +56,7 @@
   height: 100vh;
   background: var(--card-bg);
   box-shadow: var(--shadow-lg);
-  transition: var(--transition);
+  transition: left 0.3s ease-out;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -66,11 +65,6 @@
 
 .sidebar-open {
   left: 0;
-  animation: slideIn 0.3s ease-out;
-}
-
-.sidebar-closed {
-  left: -320px;
 }
 
 /* Sidebar Header */
@@ -97,7 +91,7 @@
   color: var(--nav-text);
   cursor: pointer;
   padding: 0.25rem;
-  border-radius: var(--radius-sm);
+  border-radius: 4px;
   transition: var(--transition);
   width: 32px;
   height: 32px;
@@ -142,7 +136,6 @@
   text-decoration: none;
   transition: var(--transition);
   border-left: 3px solid transparent;
-  font-weight: 500;
 }
 
 .nav-link:hover {
@@ -153,7 +146,7 @@
 }
 
 .nav-link.highlight {
-  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+  background: var(--accent-color);
   color: white;
   margin: 0.5rem 1.5rem;
   border-radius: var(--radius);
@@ -161,9 +154,8 @@
 }
 
 .nav-link.highlight:hover {
-  background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+  background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow);
 }
 
 .nav-icon {
@@ -175,7 +167,6 @@
 /* Project Links */
 .project-link {
   position: relative;
-  padding-right: 3rem;
 }
 
 .project-name {
@@ -183,16 +174,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.project-version {
-  position: absolute;
-  right: 1.5rem;
-  font-size: 0.75rem;
-  color: var(--text-light);
-  background: var(--background-color);
-  padding: 0.2rem 0.5rem;
-  border-radius: 8px;
 }
 
 /* Sidebar States */
@@ -208,7 +189,6 @@
 .sidebar-error {
   color: var(--error-color);
   background: color-mix(in srgb, var(--error-color) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--error-color) 20%, transparent);
   border-radius: var(--radius);
   margin: 0 1rem;
 }
@@ -233,7 +213,6 @@
 .create-project-btn:hover {
   background: var(--accent-hover);
   text-decoration: none;
-  transform: translateY(-1px);
 }
 
 /* Sidebar Footer */
@@ -250,93 +229,4 @@
 .user-info small {
   color: var(--text-light);
   font-size: 0.75rem;
-}
-
-/* Scrollbar Styling */
-.sidebar-nav::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar-nav::-webkit-scrollbar-track {
-  background: var(--background-color);
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 2px;
-}
-
-.sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-color);
-}
-
-/* ===========================
-   RESPONSIVE SIDEBAR
-=========================== */
-
-/* Tablets */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    left: -100%;
-  }
-  
-  .sidebar-open {
-    left: 0;
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .sidebar-header {
-    padding: 1rem;
-  }
-  
-  .nav-link {
-    padding: 0.75rem 1rem;
-  }
-  
-  .nav-section-title {
-    margin: 0 1rem 0.75rem 1rem;
-  }
-  
-  .nav-link.highlight {
-    margin: 0.5rem 1rem;
-  }
-}
-
-/* Large screens - Persistent sidebar */
-@media (min-width: 1200px) {
-  .sidebar-container {
-    position: static;
-  }
-  
-  .hamburger-btn {
-    display: none;
-  }
-  
-  .sidebar-overlay {
-    display: none;
-  }
-  
-  .sidebar {
-    position: static;
-    width: 280px;
-    height: calc(100vh - 80px);
-    top: 80px;
-    left: 0;
-    box-shadow: none;
-    border-right: 1px solid var(--border-color);
-    transform: none;
-    animation: none;
-  }
-  
-  /* Adjust main content when sidebar is persistent */
-  .home-page main {
-    grid-template-columns: 280px 1fr 350px;
-  }
-  
-  .home-page main > :first-child {
-    display: none; /* Hide repository list in sidebar since it's in persistent sidebar */
-  }
 }

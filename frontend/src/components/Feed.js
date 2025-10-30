@@ -6,7 +6,6 @@ const Feed = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('local');
-  const [sortBy, setSortBy] = useState('date'); // 'date' or 'popularity'
 
   useEffect(() => {
     const fetchFeed = async () => {
@@ -16,41 +15,50 @@ const Feed = () => {
         const userId = localStorage.getItem('userId');
         
         if (tab === 'local' && (!userId || userId === 'undefined')) {
-          setError('User not logged in');
+          setError('Please log in to see local feed');
           setLoading(false);
           return;
         }
 
-        const endpoint = tab === 'local' 
-          ? `/api/activity/local/${userId}` 
-          : '/api/activity/global';
-        
-        const response = await fetch(endpoint);
-        
-        if (!response.ok) throw new Error(`Failed to fetch feed: ${response.status}`);
-        
-        let data = await response.json();
-        
-        // Reverse chronological sorting by creation date
-        data = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        
-        // If sorting by popularity, re-sort
-        if (sortBy === 'popularity') {
-          data = data.sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0));
-        }
-        
-        setFeedItems(data);
+        // Simulate API call with mock data for now
+        const mockData = [
+          {
+            _id: '1',
+            type: 'checkin',
+            userName: 'John Doe',
+            projectName: 'Web App',
+            projectId: '123',
+            message: 'Fixed authentication bug',
+            createdAt: new Date().toISOString(),
+            tags: ['javascript', 'react']
+          },
+          {
+            _id: '2',
+            type: 'create',
+            userName: 'Jane Smith',
+            projectName: 'Mobile App',
+            projectId: '124',
+            message: 'Initial project setup',
+            createdAt: new Date(Date.now() - 3600000).toISOString(),
+            tags: ['react-native', 'typescript']
+          }
+        ];
+
+        // Simulate API delay
+        setTimeout(() => {
+          setFeedItems(mockData);
+          setLoading(false);
+        }, 1000);
         
       } catch (err) {
         console.error('Error fetching feed:', err);
-        setError(err.message);
-      } finally {
+        setError('Failed to load feed');
         setLoading(false);
       }
     };
 
     fetchFeed();
-  }, [tab, sortBy]);
+  }, [tab]);
 
   const formatActivityText = (item) => {
     const userName = item.userName || 'User';
@@ -70,8 +78,29 @@ const Feed = () => {
     }
   };
 
-  if (loading) return <div className="loading">Loading feed...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (loading) return (
+    <div className="feed">
+      <div className="feed-controls">
+        <div className="feed-tabs">
+          <button className={tab === 'local' ? 'active' : ''}>Local</button>
+          <button className={tab === 'global' ? 'active' : ''}>Global</button>
+        </div>
+      </div>
+      <div className="loading">Loading activities...</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="feed">
+      <div className="feed-controls">
+        <div className="feed-tabs">
+          <button className={tab === 'local' ? 'active' : ''}>Local</button>
+          <button className={tab === 'global' ? 'active' : ''}>Global</button>
+        </div>
+      </div>
+      <div className="error">{error}</div>
+    </div>
+  );
 
   return (
     <section className="feed">
@@ -90,31 +119,16 @@ const Feed = () => {
             Global Feed
           </button>
         </div>
-        
-        <div className="feed-sorting">
-          <label htmlFor="sort-select">Sort by:</label>
-          <select 
-            id="sort-select"
-            value={sortBy} 
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-select"
-          >
-            <option value="date">Most Recent</option>
-            <option value="popularity">Most Popular</option>
-          </select>
-        </div>
       </div>
       
       <div className="feed-list">
         {feedItems && feedItems.length > 0 ? (
           feedItems.map((item, index) => (
-            <div key={item._id || index} className="feed-item card">
+            <div key={item._id || index} className="feed-item">
               <div className="feed-item-header">
-                <img 
-                  src={item.userAvatar || '/assets/images/default-avatar.png'} 
-                  alt={item.userName} 
-                  className="user-avatar"
-                />
+                <div className="user-avatar">
+                  {item.userName?.charAt(0) || 'U'}
+                </div>
                 <div className="feed-item-info">
                   <span className="activity-text">
                     {formatActivityText(item)}
@@ -128,14 +142,6 @@ const Feed = () => {
                 </div>
               </div>
               
-              {item.projectImage && (
-                <img 
-                  src={item.projectImage} 
-                  alt={item.projectName} 
-                  className="project-thumbnail"
-                />
-              )}
-              
               {item.message && (
                 <p className="checkin-message">"{item.message}"</p>
               )}
@@ -143,21 +149,12 @@ const Feed = () => {
               {item.tags && item.tags.length > 0 && (
                 <div className="hashtags">
                   {item.tags.map(tag => (
-                    <Link 
-                      key={tag} 
-                      to={`/search?tag=${tag}`}
-                      className="hashtag"
-                    >
+                    <span key={tag} className="hashtag">
                       #{tag}
-                    </Link>
+                    </span>
                   ))}
                 </div>
               )}
-              
-              <div className="activity-stats">
-                <span>📥 {item.downloadCount || 0} downloads</span>
-                <span>👁️ {item.viewCount || 0} views</span>
-              </div>
             </div>
           ))
         ) : (

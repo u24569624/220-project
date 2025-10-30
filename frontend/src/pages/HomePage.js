@@ -18,9 +18,10 @@ const HomePage = () => {
     <div className="home-page">
       <Header />
       <main>
-        <RepositoryList />
-        <div>
-          <h2>Feed</h2>
+        <div className="home-content">
+          <RepositoryList />
+        </div>
+        <div className="home-sidebar">
           <Feed />
         </div>
       </main>

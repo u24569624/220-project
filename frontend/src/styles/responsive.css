@@ -2,41 +2,55 @@
    RESPONSIVE DESIGN
 =========================== */
 
-/* Tablets and below */
-@media (max-width: 1024px) {
+/* Large PC Screens (1920px and above) */
+@media (min-width: 1920px) {
   .home-page main {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    max-width: 1600px;
+    padding: 3rem;
   }
   
-  .project-page main,
-  .project-page-container > .project-content,
-  .profile-page main {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .repo-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  .home-sidebar {
+    width: 400px;
   }
 }
 
-/* Tablets */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 0.75rem;
+/* Standard Desktop (1200px - 1919px) */
+@media (min-width: 1200px) and (max-width: 1919px) {
+  .home-page main {
+    max-width: 1400px;
+  }
+}
+
+/* Tablets and small laptops (768px - 1199px) */
+@media (max-width: 1199px) {
+  .home-page main {
+    flex-direction: column;
+    gap: 1.5rem;
   }
   
-  .home-page main,
-  .project-page main,
-  .profile-page main {
+  .home-sidebar {
+    width: 100%;
+    order: -1; /* Move feed to top on smaller screens */
+  }
+  
+  .home-content {
+    order: 1;
+  }
+}
+
+/* Tablets (768px and below) */
+@media (max-width: 768px) {
+  .home-page main {
     padding: 1rem;
+    gap: 1rem;
   }
   
   .header-nav {
+    padding: 0 1rem;
     flex-wrap: wrap;
-    padding: 1rem;
-    gap: 0.75rem;
+    height: auto;
+    min-height: 60px;
+    gap: 0.5rem;
   }
   
   .search-container {
@@ -46,84 +60,60 @@
     max-width: none;
   }
   
-  .feed-controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-  
-  .feed-sorting {
-    margin-left: 0;
-    justify-content: flex-end;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-  }
-  
-  .repo-controls {
-    flex-direction: column;
+  .site-title {
+    font-size: 1.1rem;
   }
 }
 
-/* Mobile */
+/* Mobile (480px and below) */
 @media (max-width: 480px) {
-  .home-page main,
-  .project-page main,
-  .profile-page main {
+  .home-page main {
     padding: 0.5rem;
   }
   
-  .card,
-  .feed,
-  .repository-section {
-    padding: 1rem;
-    margin-bottom: 1rem;
+  .header-nav {
+    padding: 0.5rem;
   }
   
-  .repo-grid {
-    grid-template-columns: 1fr;
+  .nav-logo {
+    height: 30px;
   }
   
-  .feed-item-header {
-    flex-direction: column;
-    align-items: flex-start;
+  .user-menu {
     gap: 0.5rem;
   }
   
-  .user-avatar {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .activity-stats {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  
-  .hashtags {
-    gap: 0.25rem;
-  }
-  
-  .hashtag, .repo-tag {
-    font-size: 0.7rem;
-    padding: 0.15rem 0.5rem;
+  .logout-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
   }
 }
 
-/* Large screens */
-@media (min-width: 1440px) {
-  .container {
-    max-width: 1400px;
-  }
-  
+/* Ultra-wide screens (2560px and above) */
+@media (min-width: 2560px) {
   .home-page main {
-    grid-template-columns: 1fr 400px;
+    max-width: 2000px;
+    padding: 4rem;
   }
   
-  .repo-grid {
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  .home-sidebar {
+    width: 450px;
+  }
+}
+
+/* Very small screens (prevent breaking) */
+@media (max-width: 360px) {
+  .header-nav {
+    gap: 0.25rem;
+  }
+  
+  .site-title {
+    font-size: 1rem;
+  }
+  
+  .theme-toggle,
+  .logout-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
 }

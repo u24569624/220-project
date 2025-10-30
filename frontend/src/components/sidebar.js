@@ -25,8 +25,6 @@ const Sidebar = () => {
         }
         
         const projectsData = await response.json();
-        console.log('Fetched projects:', projectsData);
-        
         setProjects(projectsData);
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -79,7 +77,7 @@ const Sidebar = () => {
       {/* Sidebar Menu */}
       <aside 
         id="sidebar-menu" 
-        className={`sidebar ${isOpen ? 'sidebar-open' : 'sidebar-closed'}`}
+        className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}
       >
         <div className="sidebar-header">
           <h3>Navigation</h3>
@@ -99,11 +97,11 @@ const Sidebar = () => {
               <span className="nav-icon">🏠</span>
               Home
             </Link>
-            <Link to="" onClick={() => setIsOpen(false)} className="nav-link">
+            <Link to="/profile" onClick={() => setIsOpen(false)} className="nav-link">
               <span className="nav-icon">👤</span>
               My Profile
             </Link>
-            <Link to="" onClick={() => setIsOpen(false)} className="nav-link">
+            <Link to="/search" onClick={() => setIsOpen(false)} className="nav-link">
               <span className="nav-icon">🔍</span>
               Search
             </Link>
@@ -129,9 +127,6 @@ const Sidebar = () => {
                   <span className="project-name">
                     {project.name || `Project ${project._id}`}
                   </span>
-                  {project.version && (
-                    <span className="project-version">v{project.version}</span>
-                  )}
                 </Link>
               ))
             ) : (
